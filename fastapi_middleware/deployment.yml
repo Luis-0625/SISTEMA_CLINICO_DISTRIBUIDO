@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-middleware-deployment
+  labels:
+    app: fastapi-middleware
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fastapi-middleware
+  template:
+    metadata:
+      labels:
+        app: fastapi-middleware
+    spec:
+      containers:
+        - name: fastapi-middleware
+          image: fastapi-middleware:latest
+          imagePullPolicy: Never
+          # Eliminamos el --reload y asumimos que Uvicorn ya busca el código dentro del contenedor
+          command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8020"]
+          ports:
+            - containerPort: 8020
+          # ELIMINAMOS volumeMounts
+          # volumeMounts: 
+          #   - name: fastapi-code
+          #     mountPath: /app
+      # ELIMINAMOS volumes
+      # volumes:
+      #   - name: fastapi-code
+      #     hostPath:
+      #       path: /mnt/host/fastapi-code-dir
+      #       type: Directory

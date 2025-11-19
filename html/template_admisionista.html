@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Admisionista · Sistema de Historia Clínica</title>
+
+        <!-- ==============================
+       LIBRERÍAS
+  ============================== -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <!-- ==============================
+       ESTILOS GENERALES
+  ============================== -->
+        <style>
+    :root {
+      --primary: #00bfa6;
+      --secondary: #5ce1e6;
+      --bg: #f7fafa;
+      --card: #ffffff;
+      --text: #243032;
+      --muted: #6c757d;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    [data-theme="dark"] {
+      --primary: #00bfa6;
+      --secondary: #268b7e;
+      --bg: #0e1619;
+      --card: #121e22;
+      --text: #d1e3e6;
+      --muted: #a0b1b2;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    /* -------- RESET -------- */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      display: flex;
+      min-height: 100vh;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* ==============================
+       BARRA LATERAL
+    ============================== */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, var(--primary), var(--secondary));
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand .logo {
+      background: rgba(255, 255, 255, 0.15);
+      font-size: 28px;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .brand h2 { font-size: 18px; font-weight: 700; }
+    .brand small { font-size: 12px; opacity: 0.8; }
+
+    nav {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    nav a:hover, nav a.active {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateX(4px);
+    }
+
+    .logout {
+      margin-top: 16px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .logout:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* ==============================
+       SECCIÓN PRINCIPAL
+    ============================== */
+    .main {
+      flex: 1;
+      padding: 24px 40px;
+      overflow-y: auto;
+    }
+
+    header.app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .header-left h1 {
+      font-size: 22px;
+      color: var(--primary);
+    }
+
+    .header-left p {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .theme-toggle {
+      border: none;
+      background: transparent;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    /* ==============================
+       TARJETAS Y DISEÑOS
+    ============================== */
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    .card h3 {
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+
+    /* ==============================
+       FORMULARIOS
+    ============================== */
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 14px;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background: var(--bg);
+      color: var(--text);
+      transition: border 0.3s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+
+    textarea { min-height: 90px; resize: vertical; }
+
+    .btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.3s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    /* ==============================
+       TABLAS Y LISTAS
+    ============================== */
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .list-item {
+      background: var(--bg);
+      padding: 12px 16px;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .list-item h4 { color: var(--primary); margin-bottom: 4px; }
+    .list-item p { font-size: 13px; color: var(--muted); }
+
+    /* ==============================
+       PIE DE PÁGINA
+    ============================== */
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { padding: 16px; }
+    }
+  </style>
+    </head>
+    <body data-theme="light">
+        <!-- ==========================================
+       BARRA LATERAL
+  =========================================== -->
+        <aside class="sidebar">
+            <div>
+                <div class="brand">
+                    <div class="logo">🏥</div>
+                    <div>
+                        <h2>Historia Clínica</h2>
+                        <small>Panel Admisionista</small>
+                    </div>
+                </div>
+
+                <nav>
+                    <a href="#" class="active" data-target="dashboard">🏠
+                        Dashboard</a>
+                    <a href="#" data-target="pacientes">👤 Pacientes</a>
+                    <a href="#" data-target="ingresos">🏥 Ingresos</a>
+                    <a href="#" data-target="activos">📋 Activos</a>
+                    <a href="#" data-target="estadisticas">📊 Estadísticas</a>
+                </nav>
+            </div>
+
+            <div>
+                <button class="logout" id="logoutBtn">Cerrar Sesión</button>
+            </div>
+        </aside>
+
+        <!-- ==========================================
+       CONTENIDO PRINCIPAL
+  =========================================== -->
+        <div class="main">
+            <header class="app-header">
+                <div class="header-left">
+                    <h1>Panel del Admisionista</h1>
+                    <p>Gestión de pacientes e ingresos hospitalarios</p>
+                </div>
+                <button class="theme-toggle" id="themeToggle"
+                    title="Cambiar tema">🌙</button>
+            </header>
+
+            <!-- DASHBOARD -->
+            <div class="card">
+                <h3>Resumen General</h3>
+                <canvas id="activityChart" height="100"></canvas>
+            </div>
+
+            <!-- FORMULARIO PACIENTE -->
+            <div class="card">
+                <h3>Registrar Paciente</h3>
+                <form id="formPaciente">
+                    <input type="text" placeholder="Documento" required />
+                    <input type="text" placeholder="Nombre" required />
+                    <input type="text" placeholder="Apellido" required />
+                    <input type="date" required />
+                    <input type="text" placeholder="Teléfono" />
+                    <input type="email" placeholder="Correo electrónico" />
+                    <textarea placeholder="Dirección completa"></textarea>
+                    <textarea placeholder="Alergias (si aplica)"></textarea>
+                    <button class="btn">Registrar</button>
+                </form>
+            </div>
+
+            <!-- INGRESOS ACTIVOS -->
+            <div class="card">
+                <h3>Ingresos Activos</h3>
+                <div class="list">
+                    <div class="list-item">
+                        <h4>Juan Pérez</h4>
+                        <p>Motivo: Cirugía programada · Fecha: 01/11/2025</p>
+                    </div>
+                    <div class="list-item">
+                        <h4>María Gómez</h4>
+                        <p>Motivo: Urgencia médica · Fecha: 31/10/2025</p>
+                    </div>
+                </div>
+            </div>
+
+            <footer>
+                © 2025 Sistema de Historia Clínica — Universidad Nacional
+                | Proyecto Académico — Arquitectura Distribuida
+            </footer>
+        </div>
+
+        <!-- ==============================
+       JAVASCRIPT
+  ============================== -->
+        <script>
+    // Cambiar tema (claro/oscuro)
+    const toggle = document.getElementById("themeToggle");
+    const body = document.body;
+    toggle.addEventListener("click", () => {
+      const theme = body.dataset.theme === "light" ? "dark" : "light";
+      body.dataset.theme = theme;
+      toggle.textContent = theme === "light" ? "🌙" : "☀️";
+      localStorage.setItem("theme", theme);
+    });
+
+    // Restaurar tema guardado
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      body.dataset.theme = savedTheme;
+      toggle.textContent = savedTheme === "light" ? "🌙" : "☀️";
+    }
+
+    // Gráfico (simulación)
+    const ctx = document.getElementById("activityChart").getContext("2d");
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
+        datasets: [
+          {
+            label: "Consultas",
+            data: [5, 9, 6, 8, 7, 4, 10],
+            backgroundColor: "rgba(0,191,166,0.8)",
+            borderRadius: 6,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+      },
+    });
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "/";
+    });
+  </script>
+    </body>
+</html>

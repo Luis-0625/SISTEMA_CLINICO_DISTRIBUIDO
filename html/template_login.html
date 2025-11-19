@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Historia Clínica Electrónica - Acceso</title>
+        <link rel="icon" href="/static/icons/clinic.png" />
+
+        <style>
+    /* ======== COLORES Y FUENTES ======== */
+    :root {
+      --primary: #2563eb;
+      --secondary: #1e40af;
+      --accent: #0ea5e9;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --light-bg: #f1f5f9;
+      --white: #ffffff;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      --radius: 16px;
+      --transition: all 0.3s ease;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #dbeafe, #eff6ff);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ======== CONTENEDOR PRINCIPAL ======== */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 420px;
+      padding: 40px 35px;
+      position: relative;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 60px;
+      color: var(--primary);
+      margin-bottom: 10px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 26px;
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 25px;
+      font-size: 14px;
+    }
+
+    /* ======== CAMPOS ======== */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: var(--text-main);
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.8px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: var(--transition);
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      outline: none;
+    }
+
+    /* ======== BOTÓN ======== */
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+    }
+
+    button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ======== ALERTAS ======== */
+    .alert {
+      display: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 18px;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .alert-error {
+      background: #fee2e2;
+      color: var(--danger);
+      border-left: 4px solid #ef4444;
+    }
+
+    .alert-success {
+      background: #dcfce7;
+      color: var(--success);
+      border-left: 4px solid #16a34a;
+    }
+
+    /* ======== INFO ======== */
+    .test-users {
+      background: #f8fafc;
+      border-left: 4px solid var(--primary);
+      border-radius: 10px;
+      padding: 12px 15px;
+      font-size: 13px;
+      color: var(--text-main);
+      margin-top: 25px;
+    }
+
+    .test-users strong {
+      color: var(--primary);
+      font-size: 14px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .test-users code {
+      background: #e0e7ff;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+
+    /* ======== PIE DE PÁGINA ======== */
+    .footer {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 11px;
+      margin-top: 25px;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 30px 20px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+    }
+  </style>
+    </head>
+
+    <body>
+        <div class="card">
+            <div class="logo">🏥</div>
+            <h1>Historia Clínica</h1>
+            <p class="subtitle">Sistema Electrónico Seguro</p>
+
+            <div id="alert" class="alert"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="documento">Número de Documento</label>
+                    <input id="documento" type="text"
+                        placeholder="Ejemplo: 1234567890" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input id="password" type="password"
+                        placeholder="Ingrese su contraseña" required />
+                </div>
+
+                <button type="submit" id="loginBtn">
+                    <span id="btnText">Iniciar Sesión</span>
+                    <div id="spinner" class="spinner"></div>
+                </button>
+            </form>
+
+            <div class="test-users">
+                <strong>Usuarios de Prueba</strong>
+                🩺 Médico → <code>1234567890</code> /
+                <code>admin123</code><br />
+                📋 Admisionista → <code>0987654321</code> /
+                <code>admin123</code><br />
+                👤 Paciente → <code>1122334455</code> /
+                <code>admin123</code><br />
+                🔬 Resultados → <code>5544332211</code> / <code>admin123</code>
+            </div>
+
+            <div class="footer">
+                © {{ year }} Sistema de Historia Clínica Electrónica<br />
+                Proyecto Académico - Arquitectura Distribuida
+            </div>
+        </div>
+
+        <script>
+    const form = document.getElementById("loginForm");
+    const alertBox = document.getElementById("alert");
+    const btn = document.getElementById("loginBtn");
+    const spinner = document.getElementById("spinner");
+    const btnText = document.getElementById("btnText");
+
+    function showAlert(message, type) {
+      alertBox.textContent = message;
+      alertBox.className = `alert alert-${type}`;
+      alertBox.style.display = "block";
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const documento = document.getElementById("documento").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!documento || !password) {
+        showAlert("Por favor complete todos los campos.", "error");
+        return;
+      }
+
+      btn.disabled = true;
+      spinner.style.display = "block";
+      btnText.style.display = "none";
+
+      const data = new URLSearchParams();
+      data.append("username", documento);
+      data.append("password", password);
+
+      try {
+        const res = await fetch("/token", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: data,
+        });
+        const json = await res.json();
+        if (res.ok) {
+          showAlert("Inicio de sesión exitoso. Redirigiendo...", "success");
+          localStorage.setItem("access_token", json.access_token);
+          localStorage.setItem("rol", json.rol);
+          setTimeout(() => {
+            window.location.href = `/dashboard/${json.rol}`;
+          }, 1200);
+        } else {
+          showAlert(json.detail || "Credenciales incorrectas.", "error");
+        }
+      } catch {
+        showAlert("Error de conexión con el servidor.", "error");
+      } finally {
+        btn.disabled = false;
+        spinner.style.display = "none";
+        btnText.style.display = "block";
+      }
+    });
+  </script>
+    </body>
+</html>

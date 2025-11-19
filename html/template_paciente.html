@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Panel del Paciente - Historia Clínica</title>
+        <style>
+        :root {
+            --primary: #00bfa6;
+            --secondary: #5ce1e6;
+            --light-bg: #f0f9f9;
+            --text-dark: #2e3a3a;
+            --card-bg: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* === SIDEBAR === */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 25px 0;
+            box-shadow: 2px 0 12px var(--shadow);
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar nav a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            margin: 5px 0;
+            transition: background 0.3s;
+            font-weight: 500;
+        }
+
+        .sidebar nav a:hover,
+        .sidebar nav a.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-left: 4px solid white;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 20px;
+            margin: 20px auto;
+            display: block;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        /* === MAIN CONTENT === */
+        .main-content {
+            flex: 1;
+            padding: 30px 50px;
+            overflow-y: auto;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 26px;
+            color: var(--text-dark);
+        }
+
+        header span {
+            color: var(--primary);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 2px 10px var(--shadow);
+            padding: 30px;
+            margin-bottom: 25px;
+            animation: slideUp 0.4s ease;
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            background: #f7fcfc;
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .info-item label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .info-item p {
+            color: var(--text-dark);
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .historia-item {
+            background: white;
+            border-left: 5px solid var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px var(--shadow);
+            transition: 0.3s;
+        }
+
+        .historia-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px var(--shadow);
+        }
+
+        .historia-item h4 {
+            color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .historia-item p {
+            color: #333;
+            margin: 8px 0;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: 0.3s;
+            margin-top: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 191, 166, 0.3);
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-error {
+            background: #fdecea;
+            color: #b71c1c;
+            border-left: 4px solid #f44336;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #256029;
+            border-left: 4px solid #4caf50;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+    </head>
+
+    <body>
+        <!-- === SIDEBAR === -->
+        <aside class="sidebar">
+            <div>
+                <h2>🏥 Paciente</h2>
+                <nav>
+                    <a href="#" class="active">🏠 Inicio</a>
+                    <a href="#">👤 Mis Datos</a>
+                    <a href="#">📋 Historial</a>
+                    <a href="#" onclick="descargarPDF()">📄 Descargar PDF</a>
+                </nav>
+            </div>
+            <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+        </aside>
+
+        <!-- === MAIN CONTENT === -->
+        <main class="main-content">
+            <header>
+                <h1>Bienvenido, <span id="userName">Paciente</span></h1>
+                <p id="fechaActual"></p>
+            </header>
+
+            <div id="alertMain" class="alert"></div>
+
+            <section class="card">
+                <h2>🩺 Datos Personales</h2>
+                <div id="datosPaciente" class="info-grid"></div>
+            </section>
+
+            <section class="card">
+                <h2>📚 Historial Médico</h2>
+                <div id="historialMedico"></div>
+                <button class="download-btn" id="btnDescargar"
+                    onclick="descargarPDF()">
+                    📄 Descargar Mi Historia Clínica
+                </button>
+            </section>
+        </main>
+
+        <script>
+        const API_URL = window.location.origin;
+        const token = localStorage.getItem("access_token");
+        let currentDocumento = "";
+
+        if (!token) window.location.href = "/";
+
+        document.getElementById("fechaActual").textContent = new Date().toLocaleDateString("es-ES", {
+            weekday: "long", year: "numeric", month: "long", day: "numeric"
+        });
+
+        async function loadUserInfo() {
+            try {
+                const response = await fetch(`${API_URL}/users/me`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (!response.ok) throw new Error("Error usuario");
+
+                const user = await response.json();
+                document.getElementById("userName").textContent = user.nombre;
+                currentDocumento = user.documento_id;
+                loadPacienteData(user.documento_id);
+                loadHistorial(user.documento_id);
+            } catch {
+                showAlert("Error al cargar información del usuario", "error");
+            }
+        }
+
+        async function loadPacienteData(documento) {
+            const container = document.getElementById("datosPaciente");
+            container.innerHTML = `<p>Cargando datos...</p>`;
+            try {
+                const res = await fetch(`${API_URL}/paciente/${documento}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const paciente = await res.json();
+                const edad = calcularEdad(paciente.fecha_nacimiento);
+
+                container.innerHTML = `
+                    <div class="info-item"><label>Nombre</label><p>${paciente.nombre} ${paciente.apellido}</p></div>
+                    <div class="info-item"><label>Documento</label><p>${paciente.documento_id}</p></div>
+                    <div class="info-item"><label>Edad</label><p>${edad} años</p></div>
+                    <div class="info-item"><label>Género</label><p>${paciente.genero}</p></div>
+                    <div class="info-item"><label>Teléfono</label><p>${paciente.telefono || "—"}</p></div>
+                    <div class="info-item"><label>Email</label><p>${paciente.email || "—"}</p></div>
+                    <div class="info-item"><label>Dirección</label><p>${paciente.direccion || "—"}</p></div>
+                `;
+            } catch {
+                showAlert("Error al cargar datos del paciente", "error");
+            }
+        }
+
+        async function loadHistorial(documento) {
+            const container = document.getElementById("historialMedico");
+            container.innerHTML = `<p>Cargando historial...</p>`;
+            try {
+                const res = await fetch(`${API_URL}/historia_clinica/paciente/${documento}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const data = await res.json();
+                if (!data || data.length === 0) {
+                    container.innerHTML = `<p>No hay registros médicos aún.</p>`;
+                    return;
+                }
+                container.innerHTML = data.map(h => `
+                    <div class="historia-item">
+                        <h4>${h.diagnostico} <span>${new Date(h.fecha_consulta).toLocaleDateString("es-ES")}</span></h4>
+                        <p><strong>Síntomas:</strong> ${h.sintomas}</p>
+                        <p><strong>Tratamiento:</strong> ${h.tratamiento}</p>
+                        <p><strong>Médico:</strong> ${h.nombre_medico}</p>
+                    </div>
+                `).join("");
+            } catch {
+                showAlert("Error al cargar historial", "error");
+            }
+        }
+
+        function calcularEdad(nac) {
+            const diff = Date.now() - new Date(nac).getTime();
+            return Math.abs(new Date(diff).getUTCFullYear() - 1970);
+        }
+
+        async function descargarPDF() {
+            try {
+                const res = await fetch(`${API_URL}/exportar_pdf/${currentDocumento}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `historia_clinica_${currentDocumento}.pdf`;
+                a.click();
+                showAlert("PDF descargado con éxito", "success");
+            } catch {
+                showAlert("Error al descargar PDF", "error");
+            }
+        }
+
+        function showAlert(msg, type) {
+            const alertDiv = document.getElementById("alertMain");
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = msg;
+            alertDiv.style.display = "block";
+            setTimeout(() => (alertDiv.style.display = "none"), 4000);
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = "/";
+        }
+
+        loadUserInfo();
+    </script>
+    </body>
+</html>

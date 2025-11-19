@@ -1,0 +1,18 @@
+fastapi[all]
+# requirements.txt
+fastapi
+uvicorn[standard]
+# Agrega o verifica esta línea:
+psycopg2-binary
+python-jose 
+fpdf
+sqlalchemy
+passlib[bcrypt]
+
+
+
+
+#docker build -t fastapi-clinica:latest .
+#minikube image load fastapi-clinica:latest
+#kubectl set image deployment/fastapi-middleware-deployment fastapi-middleware=fastapi-clinica:latest
+#kubectl rollout restart deployment fastapi-middleware-deployment
